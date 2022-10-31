@@ -1,42 +1,51 @@
 import 'package:flutter/material.dart';
+import 'package:my_shop_app/providers/product.dart';
+import 'package:my_shop_app/screens/product_detail_screen.dart';
+import 'package:provider/provider.dart';
 
 class ProductItem extends StatelessWidget {
-  final String id;
-  final String title;
-  final String imageUrl;
-
-  const ProductItem({
-    Key key,
-    @required this.id,
-    @required this.imageUrl,
-    @required this.title,
-  }) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
-    return GridTile(
-      child: Image.network(
-        imageUrl,
-        fit: BoxFit.cover,
-      ),
-      footer: GridTileBar(
-        backgroundColor: Colors.black54,
-        leading: IconButton(
-          onPressed: () => null,
-          icon: Icon(
-            Icons.favorite,
+    final product = Provider.of<Product>(context);
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(10),
+      child: GridTile(
+        child: GestureDetector(
+          onTap: () {
+            Navigator.of(context).pushNamed(
+              ProductDetailScreen.routeName,
+              arguments: product.id,
+            );
+          },
+          child: Image.network(
+            product.imageUrl,
+            fit: BoxFit.cover,
           ),
         ),
-        trailing: IconButton(
-          onPressed: () => null,
-          icon: Icon(
-            Icons.shopping_cart,
-            color: Colors.white,
+        footer: GridTileBar(
+          backgroundColor: Colors.black87,
+          leading: IconButton(
+            onPressed: () => product.toggleFavorite(),
+            icon: Icon(
+              !product.isFavorite ? Icons.favorite_outline : Icons.favorite,
+              color: Theme.of(context).colorScheme.secondary,
+            ),
           ),
-        ),
-        title: Text(
-          title,
-          textAlign: TextAlign.center,
+          trailing: IconButton(
+            onPressed: () => null,
+            icon: Icon(
+              Icons.shopping_cart,
+              color: Theme.of(context).colorScheme.secondary,
+            ),
+          ),
+          title: Text(
+            product.title,
+            style: TextStyle(
+              fontSize: 13,
+            ),
+            textAlign: TextAlign.center,
+          ),
         ),
       ),
     );
