@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_shop_app/providers/cart.dart';
 import 'package:my_shop_app/screens/cart_screen.dart';
-import 'package:my_shop_app/screens/product_detail_screen.dart';
+import 'package:my_shop_app/widgets/app_drawer.dart';
 import 'package:my_shop_app/widgets/badge.dart';
 import 'package:my_shop_app/widgets/products_grid.dart';
 import 'package:provider/provider.dart';
@@ -18,6 +18,21 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Widget okButton = TextButton(
+      child: Text("Ok"),
+      onPressed: () => Navigator.of(context).pop(),
+    );
+
+    AlertDialog alert = AlertDialog(
+      title: Text("Sorry"),
+      content: Text(
+        "This feature is not implemented yet 😖",
+      ),
+      actions: [
+        okButton,
+      ],
+    );
+
     return Scaffold(
         appBar: AppBar(
           actions: [
@@ -61,12 +76,18 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
           ],
           title: Text('MyShop'),
         ),
+        drawer: AppDrawer(),
         body: ProductsGrid(
           showOnlyFavorites: _showOnlyFavorites,
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         floatingActionButton: FloatingActionButton(
-          onPressed: () => null,
+          onPressed: () => showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return alert;
+            },
+          ),
           child: Icon(
             Icons.add,
           ),

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_shop_app/providers/cart.dart' show Cart;
-import 'package:my_shop_app/providers/product.dart';
-import 'package:my_shop_app/providers/products.dart';
+import 'package:my_shop_app/providers/orders.dart';
 import 'package:my_shop_app/widgets/cart_item.dart';
 import 'package:provider/provider.dart';
 
@@ -11,7 +10,7 @@ class CartScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cart = Provider.of<Cart>(context);
-    final products = Provider.of<Products>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Your Cart'),
@@ -42,7 +41,13 @@ class CartScreen extends StatelessWidget {
                   ),
                   Spacer(),
                   ElevatedButton(
-                    onPressed: (() => null),
+                    onPressed: () {
+                      Provider.of<Orders>(context, listen: false).addOrder(
+                        cart.items.values.toList(),
+                        cart.totalSum,
+                      );
+                      cart.clearCartItems();
+                    },
                     child: Row(
                       children: [
                         const Text(
@@ -60,18 +65,26 @@ class CartScreen extends StatelessWidget {
             ),
           ),
           SizedBox(height: 10),
-          Expanded(
-            child: ListView.builder(
-              itemBuilder: ((context, index) => CartItem(
-                    productId: cart.items.keys.toList()[index],
-                    id: cart.items.values.toList()[index].id,
-                    price: cart.items.values.toList()[index].price,
-                    quantity: cart.items.values.toList()[index].quantity,
-                    title: cart.items.values.toList()[index].title,
-                  )),
-              itemCount: cart.items.length,
-            ),
-          )
+          cart.items.length == 0
+              ? Text(
+                  'You cart is empty!',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
+                )
+              : Expanded(
+                  child: ListView.builder(
+                    itemBuilder: ((context, index) => CartItem(
+                          productId: cart.items.keys.toList()[index],
+                          id: cart.items.values.toList()[index].id,
+                          price: cart.items.values.toList()[index].price,
+                          quantity: cart.items.values.toList()[index].quantity,
+                          title: cart.items.values.toList()[index].title,
+                        )),
+                    itemCount: cart.items.length,
+                  ),
+                )
         ],
       ),
     );
