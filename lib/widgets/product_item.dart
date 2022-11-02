@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_shop_app/providers/cart.dart';
 import 'package:my_shop_app/providers/product.dart';
 import 'package:my_shop_app/screens/product_detail_screen.dart';
 import 'package:provider/provider.dart';
@@ -7,6 +8,8 @@ class ProductItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final product = Provider.of<Product>(context);
+    final cart = Provider.of<Cart>(context);
+    // final cartItems = cart.items;
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
@@ -29,14 +32,17 @@ class ProductItem extends StatelessWidget {
             onPressed: () => product.toggleFavorite(),
             icon: Icon(
               !product.isFavorite ? Icons.favorite_outline : Icons.favorite,
-              color: Theme.of(context).colorScheme.secondary,
+              color: Theme.of(context).colorScheme.error,
             ),
           ),
           trailing: IconButton(
-            onPressed: () => null,
+            onPressed: () {
+              cart.addItem(product.id, product.price, product.title);
+              print(cart.items);
+            },
             icon: Icon(
-              Icons.shopping_cart,
-              color: Theme.of(context).colorScheme.secondary,
+              Icons.shopping_cart_outlined,
+              color: Theme.of(context).colorScheme.error,
             ),
           ),
           title: Text(

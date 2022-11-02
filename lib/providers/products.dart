@@ -37,6 +37,23 @@ class Products with ChangeNotifier {
     ),
   ];
 
+  // MOVING FILTERING LOGIC TO A WIDGET INSTEAD OF STATE WIDE PROVIDER
+  // var _showFavoritesOnly = false;
+
+  // void showFavoritesOnly() {
+  //   _showFavoritesOnly = true;
+  //   notifyListeners();
+  // }
+
+  // void showAll() {
+  //   _showFavoritesOnly = false;
+  //   notifyListeners();
+  // }
+
+  List<Product> get favoriteItems {
+    return _items.where((item) => item.isFavorite).toList();
+  }
+
   List<Product> get items {
     return [..._items];
   }
