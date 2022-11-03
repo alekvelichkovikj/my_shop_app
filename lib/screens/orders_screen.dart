@@ -22,7 +22,7 @@ class OrdersScreen extends StatelessWidget {
               child: Text(
                 'You have no orders at the moment!',
                 style: TextStyle(
-                  fontSize: 24,
+                  fontSize: 18,
                   fontWeight: FontWeight.w600,
                 ),
                 textAlign: TextAlign.center,

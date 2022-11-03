@@ -42,10 +42,13 @@ class CartScreen extends StatelessWidget {
                   Spacer(),
                   ElevatedButton(
                     onPressed: () {
-                      Provider.of<Orders>(context, listen: false).addOrder(
-                        cart.items.values.toList(),
-                        cart.totalSum,
-                      );
+                      cart.totalSum > 0
+                          ? Provider.of<Orders>(context, listen: false)
+                              .addOrder(
+                              cart.items.values.toList(),
+                              cart.totalSum,
+                            )
+                          : null;
                       cart.clearCartItems();
                     },
                     child: Row(
