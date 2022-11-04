@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_shop_app/providers/cart.dart';
 import 'package:my_shop_app/providers/products.dart';
+import 'package:my_shop_app/widgets/two_button_alert_dialog.dart';
 import 'package:provider/provider.dart';
 
 class CartItem extends StatelessWidget {
@@ -25,7 +26,21 @@ class CartItem extends StatelessWidget {
     // print(productImageUrl);
 
     return Dismissible(
-      onDismissed: (_) => cart.removeItem(productId),
+      confirmDismiss: (_) {
+        return showDialog(
+            context: context,
+            builder: ((context) => TwoButtonAlertDialog(
+                  content: 'Do you want to delete the whole item?',
+                  firstButtonOnTap: () => Navigator.of(context).pop(true),
+                  firstButtonText: 'Confirm',
+                  secondButtonOnTap: () => Navigator.of(context).pop(false),
+                  secondButtonText: 'Cancel',
+                  title: 'Are you sure?',
+                )));
+      },
+      onDismissed: (_) {
+        cart.removeItem(productId);
+      },
       direction: DismissDirection.endToStart,
       key: ValueKey(id),
       background: Container(
@@ -45,14 +60,9 @@ class CartItem extends StatelessWidget {
         child: Padding(
           padding: EdgeInsets.all(8),
           child: ListTile(
-            leading: Container(
-              width: 60,
-              height: 60,
-              child: Image.network(
-                product.imageUrl,
-                fit: BoxFit.fitWidth,
-                // width: 60,
-              ),
+            leading: CircleAvatar(
+              radius: 30,
+              backgroundImage: NetworkImage(product.imageUrl),
             ),
             title: Text(title),
             subtitle: Column(
