@@ -69,7 +69,7 @@ class CartItem extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Price: € ${(price).toStringAsFixed(2)}',
+                  'Price: €${(price).toStringAsFixed(2)}',
                   style:
                       TextStyle(color: Theme.of(context).colorScheme.primary),
                 ),

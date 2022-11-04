@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:my_shop_app/providers/product.dart';
+import 'package:my_shop_app/providers/products.dart';
+import 'package:provider/provider.dart';
 
 class EditProductScreen extends StatefulWidget {
   static const routeName = '/edit-product-screen';
@@ -26,15 +28,38 @@ class _EditProductScreenState extends State<EditProductScreen> {
     imageUrl: '',
   );
 
+  var _initValues = {
+    'title': '',
+    'description': '',
+    'price': '',
+    'imageUrl': '',
+  };
+
+  var _isInit = true;
+
   @override
-  // void initState() {
-  //   _imageUrlControler.addListener(_updateImageUrl);
-  //   super.initState();
-  // }
+  void didChangeDependencies() {
+    if (_isInit) {
+      final productId = ModalRoute.of(context).settings.arguments as String;
+      print(productId);
+      if (productId != null) {
+        _editedProduct =
+            Provider.of<Products>(context, listen: false).findById(productId);
+        _initValues = {
+          'title': _editedProduct.title,
+          'description': _editedProduct.description,
+          'price': _editedProduct.price.toString(),
+          'imageUrl': '',
+        };
+        _imageUrlControler.text = _editedProduct.imageUrl;
+      }
+    }
+    _isInit = false;
+    super.didChangeDependencies();
+  }
 
   @override
   void dispose() {
-    // _imageUrlFocusNode.removeListener(_updateImageUrl);
     _priceFocusNode.dispose();
     _descriptionFocusNode.dispose();
     _imageUrlControler.dispose();
@@ -48,13 +73,13 @@ class _EditProductScreenState extends State<EditProductScreen> {
       return;
     }
     _form.currentState.save();
-    print(_editedProduct.description);
-    print(_editedProduct.imageUrl);
-    print(_editedProduct.title);
-    print(_editedProduct.price);
-    _form.currentState.reset();
-    _imageUrlControler.clear();
-    setState(() {});
+    if (_editedProduct.id != null) {
+      Provider.of<Products>(context, listen: false)
+          .udateProduct(_editedProduct.id, _editedProduct);
+    } else {
+      Provider.of<Products>(context, listen: false).addProduct(_editedProduct);
+    }
+    Navigator.of(context).pop();
   }
 
   void previewImage() {
@@ -65,7 +90,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit Product'),
+        title: Text(_editedProduct.id == null ? 'Add Product' : 'Edit Product'),
         actions: [
           IconButton(
             onPressed: _saveForm,
@@ -81,6 +106,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
             child: Column(
               children: [
                 TextFormField(
+                  initialValue: _initValues['title'],
                   decoration: InputDecoration(labelText: 'Title'),
                   validator: (value) {
                     if (value.isEmpty) {
@@ -91,7 +117,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   textInputAction: TextInputAction.next,
                   onSaved: (newValue) {
                     _editedProduct = Product(
-                      id: null,
+                      id: _editedProduct.id,
+                      isFavorite: _editedProduct.isFavorite,
                       description: _editedProduct.description,
                       imageUrl: _editedProduct.imageUrl,
                       price: _editedProduct.price,
@@ -102,6 +129,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       FocusScope.of(context).requestFocus(_priceFocusNode),
                 ),
                 TextFormField(
+                  initialValue: _initValues['price'],
                   decoration: InputDecoration(labelText: 'Price'),
                   validator: (value) {
                     if (value.isEmpty) {
@@ -130,7 +158,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   focusNode: _priceFocusNode,
                   onSaved: (newValue) {
                     _editedProduct = Product(
-                      id: null,
+                      id: _editedProduct.id,
+                      isFavorite: _editedProduct.isFavorite,
                       description: _editedProduct.description,
                       imageUrl: _editedProduct.imageUrl,
                       price: double.parse(newValue),
@@ -141,6 +170,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       .requestFocus(_descriptionFocusNode),
                 ),
                 TextFormField(
+                  initialValue: _initValues['description'],
                   decoration: InputDecoration(labelText: 'Description'),
                   validator: (value) {
                     if (value.isEmpty) {
@@ -157,7 +187,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   focusNode: _descriptionFocusNode,
                   onSaved: (newValue) {
                     _editedProduct = Product(
-                      id: null,
+                      id: _editedProduct.id,
+                      isFavorite: _editedProduct.isFavorite,
                       description: newValue,
                       imageUrl: _editedProduct.imageUrl,
                       price: _editedProduct.price,
@@ -215,7 +246,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
                         focusNode: _imageUrlFocusNode,
                         onSaved: (newValue) {
                           _editedProduct = Product(
-                            id: null,
+                            id: _editedProduct.id,
+                            isFavorite: _editedProduct.isFavorite,
                             description: _editedProduct.description,
                             imageUrl: newValue,
                             price: _editedProduct.price,
