@@ -13,6 +13,7 @@ class ProductDetailScreen extends StatelessWidget {
       context,
       listen: false,
     ).findById(productId);
+    print(loadedProduct.description);
 
     return Scaffold(
       appBar: AppBar(
