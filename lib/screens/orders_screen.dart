@@ -26,46 +26,55 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Future<void> _refreshOrders(BuildContext context) async {
+      await Provider.of<Orders>(context, listen: false).fetchAndSetOrders();
+      print('Refresh Orders Screen');
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Your Orders'),
       ),
       drawer: AppDrawer(),
-      body: FutureBuilder(
-        future: _ordersFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else {
-            if (snapshot.error != null) {
-              return Center(child: Text('You have an error'));
+      body: RefreshIndicator(
+        onRefresh: () => _refreshOrders(context),
+        child: FutureBuilder(
+          future: _ordersFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
             } else {
-              return Consumer<Orders>(
-                builder: ((context, orderData, child) {
-                  return orderData.orders.length == 0
-                      ? Container(
-                          padding: EdgeInsets.all(20),
-                          alignment: Alignment.topCenter,
-                          child: Text(
-                            'You have no orders at the moment!',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
+              if (snapshot.error != null) {
+                return Center(child: Text('You have an error'));
+              } else {
+                return Consumer<Orders>(
+                  builder: ((context, orderData, child) {
+                    return orderData.orders.length == 0
+                        ? Container(
+                            padding: EdgeInsets.all(20),
+                            alignment: Alignment.topCenter,
+                            child: Text(
+                              'You have no orders at the moment!',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              textAlign: TextAlign.center,
                             ),
-                            textAlign: TextAlign.center,
-                          ),
-                        )
-                      : ListView.builder(
-                          itemBuilder: ((context, index) => OrderItem(
-                                order: orderData.orders[index],
-                              )),
-                          itemCount: orderData.orders.length,
-                        );
-                }),
-              );
+                          )
+                        : ListView.builder(
+                            itemBuilder: ((context, index) => OrderItem(
+                                  order: orderData.orders[index],
+                                  orderId: orderData.orders[index].id,
+                                )),
+                            itemCount: orderData.orders.length,
+                          );
+                  }),
+                );
+              }
             }
-          }
-        },
+          },
+        ),
       ),
     );
   }
