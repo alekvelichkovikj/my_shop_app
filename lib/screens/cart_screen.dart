@@ -40,29 +40,7 @@ class CartScreen extends StatelessWidget {
                     ),
                   ),
                   Spacer(),
-                  ElevatedButton(
-                    onPressed: () {
-                      cart.totalSum > 0
-                          ? Provider.of<Orders>(context, listen: false)
-                              .addOrder(
-                              cart.items.values.toList(),
-                              cart.totalSum,
-                            )
-                          : null;
-                      cart.clearCartItems();
-                    },
-                    child: Row(
-                      children: [
-                        const Text(
-                          'Order Now',
-                        ),
-                        SizedBox(
-                          width: 5,
-                        ),
-                        Icon(Icons.delivery_dining)
-                      ],
-                    ),
-                  )
+                  OrderButton(cart: cart)
                 ],
               ),
             ),
@@ -88,6 +66,55 @@ class CartScreen extends StatelessWidget {
                     itemCount: cart.items.length,
                   ),
                 )
+        ],
+      ),
+    );
+  }
+}
+
+class OrderButton extends StatefulWidget {
+  const OrderButton({
+    Key key,
+    @required this.cart,
+  }) : super(key: key);
+
+  final Cart cart;
+
+  @override
+  State<OrderButton> createState() => _OrderButtonState();
+}
+
+class _OrderButtonState extends State<OrderButton> {
+  var _isLoading = false;
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: (widget.cart.totalSum <= 0 || _isLoading)
+          ? null
+          : () async {
+              setState(() {
+                _isLoading = true;
+              });
+              await Provider.of<Orders>(context, listen: false).addOrder(
+                widget.cart.items.values.toList(),
+                widget.cart.totalSum,
+              );
+              setState(() {
+                _isLoading = false;
+              });
+              widget.cart.clearCartItems();
+            },
+      child: Row(
+        children: [
+          _isLoading
+              ? CircularProgressIndicator()
+              : const Text(
+                  'Order Now',
+                ),
+          SizedBox(
+            width: 5,
+          ),
+          Icon(Icons.delivery_dining)
         ],
       ),
     );
