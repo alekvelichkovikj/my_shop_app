@@ -30,7 +30,6 @@ class Orders with ChangeNotifier {
         'https://flutter-shop-app-df07c-default-rtdb.europe-west1.firebasedatabase.app/orders.json');
     try {
       final response = await http.get(url);
-      // print(response.body);
       final List<OrderItem> loadedOrders = [];
       final firebaseData = json.decode(response.body) as Map<String, dynamic>;
       if (firebaseData == null) {
