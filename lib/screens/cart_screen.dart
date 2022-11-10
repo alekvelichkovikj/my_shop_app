@@ -48,8 +48,9 @@ class CartScreen extends StatelessWidget {
           SizedBox(height: 10),
           cart.items.length == 0
               ? Text(
-                  'You cart is empty!',
+                  'You cart is empty.',
                   style: TextStyle(
+                    color: Colors.grey.shade800,
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
                   ),

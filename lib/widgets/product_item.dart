@@ -26,7 +26,8 @@ class ProductItem extends StatelessWidget {
           ),
         ),
         footer: GridTileBar(
-          backgroundColor: Colors.black87,
+          backgroundColor:
+              Theme.of(context).colorScheme.primary.withOpacity(0.6),
           leading: IconButton(
             onPressed: () {
               product.toggleFavorite();

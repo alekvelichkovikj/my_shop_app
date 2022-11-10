@@ -54,8 +54,9 @@ class _OrdersScreenState extends State<OrdersScreen> {
                             padding: EdgeInsets.all(20),
                             alignment: Alignment.topCenter,
                             child: Text(
-                              'You have no orders at the moment!',
+                              'You have no orders at the moment.',
                               style: TextStyle(
+                                color: Colors.grey.shade800,
                                 fontSize: 18,
                                 fontWeight: FontWeight.w600,
                               ),
