@@ -45,7 +45,16 @@ class _OrdersScreenState extends State<OrdersScreen> {
               return Center(child: CircularProgressIndicator());
             } else {
               if (snapshot.error != null) {
-                return Center(child: Text('You have an error'));
+                return Center(
+                  child: Text(
+                    'Error connecting to server.',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                );
               } else {
                 return Consumer<Orders>(
                   builder: ((context, orderData, child) {

@@ -15,22 +15,17 @@ class ProductsOverviewScreen extends StatefulWidget {
 }
 
 class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
+  Future _productsFuture;
   bool _showOnlyFavorites = false;
-  var _isInit = true;
-  var _isLoading = false;
+
+  Future _obtainProductsFuture() {
+    return Provider.of<Products>(context, listen: false).fetchAndSetProducts();
+  }
 
   @override
-  void didChangeDependencies() {
-    if (_isInit) {
-      _isLoading = true;
-      Provider.of<Products>(context).fetchAndSetProducts().then((_) {
-        setState(() {
-          _isLoading = false;
-        });
-      });
-    }
-    _isInit = false;
-    super.didChangeDependencies();
+  void initState() {
+    _productsFuture = _obtainProductsFuture();
+    super.initState();
   }
 
   @override
@@ -41,58 +36,76 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
     }
 
     return Scaffold(
-        appBar: AppBar(
-          actions: [
-            PopupMenuButton(
-              onSelected: (FilterOptions value) {
-                setState(() {
-                  if (value == FilterOptions.Favorites) {
-                    _showOnlyFavorites = true;
-                  } else {
-                    _showOnlyFavorites = false;
-                  }
-                });
-              },
-              icon: Icon(Icons.more_vert),
-              itemBuilder: (_) => [
-                PopupMenuItem(
-                  child: Text('Favorites'),
-                  value: FilterOptions.Favorites,
-                ),
-                PopupMenuItem(
-                  child: Text('All'),
-                  value: FilterOptions.All,
-                ),
-              ],
-            ),
-            Consumer<Cart>(
-              builder: ((_, cart, child) => Badge(
-                    color: Theme.of(context).colorScheme.error,
-                    child: child,
-                    value: cart.itemCount.toString(),
-                  )),
-              child: IconButton(
-                onPressed: () {
-                  Navigator.of(context).pushNamed(
-                    CartScreen.routeName,
-                  );
-                },
-                icon: Icon(Icons.shopping_cart),
+      appBar: AppBar(
+        actions: [
+          PopupMenuButton(
+            onSelected: (FilterOptions value) {
+              setState(() {
+                if (value == FilterOptions.Favorites) {
+                  _showOnlyFavorites = true;
+                } else {
+                  _showOnlyFavorites = false;
+                }
+              });
+            },
+            icon: Icon(Icons.more_vert),
+            itemBuilder: (_) => [
+              PopupMenuItem(
+                child: Text('Favorites'),
+                value: FilterOptions.Favorites,
               ),
-            )
-          ],
-          title: Text('MyShop'),
-        ),
-        drawer: AppDrawer(),
-        body: RefreshIndicator(
+              PopupMenuItem(
+                child: Text('All'),
+                value: FilterOptions.All,
+              ),
+            ],
+          ),
+          Consumer<Cart>(
+            builder: ((_, cart, child) => Badge(
+                  color: Theme.of(context).colorScheme.error,
+                  child: child,
+                  value: cart.itemCount.toString(),
+                )),
+            child: IconButton(
+              onPressed: () {
+                Navigator.of(context).pushNamed(
+                  CartScreen.routeName,
+                );
+              },
+              icon: Icon(Icons.shopping_cart),
+            ),
+          )
+        ],
+        title: Text('MyShop'),
+      ),
+      drawer: AppDrawer(),
+      body: RefreshIndicator(
           onRefresh: () => _refreshProducts(context),
-          child: _isLoading
-              ? Center(
-                  child: CircularProgressIndicator(),
-                )
-              : ProductsGrid(
-                  showOnlyFavorites: _showOnlyFavorites,
-                ),
-        ));
+          child: FutureBuilder(
+            future: _productsFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(child: CircularProgressIndicator());
+              } else {
+                if (snapshot.error != null) {
+                  return Center(
+                    child: Text(
+                      'Error connecting to server.',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.error,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  );
+                } else {
+                  return ProductsGrid(
+                    showOnlyFavorites: _showOnlyFavorites,
+                  );
+                }
+              }
+            },
+          )),
+    );
   }
 }
