@@ -101,7 +101,7 @@ class Orders with ChangeNotifier {
     _orders.removeAt(existingOrderIndex);
     notifyListeners();
     final response = await http.delete(url);
-    print(response.body);
+    // print(response.body);
     if (response.statusCode >= 400) {
       _orders.insert(existingOrderIndex, existingOrder);
       notifyListeners();

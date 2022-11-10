@@ -28,15 +28,16 @@ class CartItem extends StatelessWidget {
     return Dismissible(
       confirmDismiss: (_) {
         return showDialog(
-            context: context,
-            builder: ((context) => TwoButtonAlertDialog(
-                  content: 'Do you want to delete the whole item?',
-                  firstButtonOnTap: () => Navigator.of(context).pop(true),
-                  firstButtonText: 'Confirm',
-                  secondButtonOnTap: () => Navigator.of(context).pop(false),
-                  secondButtonText: 'Cancel',
-                  title: 'Are you sure?',
-                )));
+          context: context,
+          builder: ((context) => TwoButtonAlertDialog(
+                title: 'Are you sure?',
+                content: 'Do you want to delete the whole item?',
+                firstButtonText: 'Confirm',
+                firstButtonOnTap: () => Navigator.of(context).pop(true),
+                secondButtonText: 'Cancel',
+                secondButtonOnTap: () => Navigator.of(context).pop(false),
+              )),
+        );
       },
       onDismissed: (_) {
         cart.removeItem(productId);
