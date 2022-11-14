@@ -46,12 +46,11 @@ class AuthScreen extends StatelessWidget {
                       margin: EdgeInsets.only(bottom: 20.0),
                       padding:
                           EdgeInsets.symmetric(vertical: 8.0, horizontal: 94.0),
-                      transform: Matrix4.rotationZ(-5 * pi / 180)
+                      transform: Matrix4.rotationZ(-8 * pi / 180)
                         ..translate(-5.0),
                       // ..translate(-10.0),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: Theme.of(context).colorScheme.error,
+                        color: Theme.of(context).colorScheme.primary,
                         boxShadow: [
                           BoxShadow(
                             blurRadius: 8,
@@ -192,7 +191,7 @@ class _AuthCardState extends State<AuthCard> {
       ),
       elevation: 8.0,
       child: Container(
-        height: _authMode == AuthMode.Signup ? 360 : 300,
+        height: _authMode == AuthMode.Signup ? 320 : 260,
         constraints:
             BoxConstraints(minHeight: _authMode == AuthMode.Signup ? 320 : 260),
         width: deviceSize.width * 0.75,
