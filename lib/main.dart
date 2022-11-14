@@ -24,17 +24,17 @@ class MyApp extends StatelessWidget {
             create: ((context) => Auth()),
           ),
           ChangeNotifierProxyProvider<Auth, Products>(
-            create: (_) => Products('', []),
+            create: (_) => Products('', [], ''),
             update: (context, auth, previous) =>
-                Products(auth.token, previous.items),
+                Products(auth.token, previous.items, auth.userId),
           ),
           ChangeNotifierProvider(
             create: ((context) => Cart()),
           ),
           ChangeNotifierProxyProvider<Auth, Orders>(
-            create: ((_) => Orders('', [])),
+            create: ((_) => Orders('', [], '')),
             update: (context, auth, previous) =>
-                Orders(auth.token, previous.orders),
+                Orders(auth.token, previous.orders, auth.userId),
           ),
         ],
         child: Consumer<Auth>(

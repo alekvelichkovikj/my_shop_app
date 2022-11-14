@@ -7,9 +7,10 @@ import 'package:http/http.dart' as http;
 
 class Products with ChangeNotifier {
   final String authToken;
+  final String userId;
   List<Product> _items = [];
 
-  Products(this.authToken, this._items);
+  Products(this.authToken, this._items, this.userId);
 
   List<Product> get favoriteItems {
     return _items.where((item) => item.isFavorite).toList();
@@ -23,9 +24,11 @@ class Products with ChangeNotifier {
     return _items.firstWhere((product) => product.id == id);
   }
 
-  Future<void> fetchAndSetProducts() async {
+  Future<void> fetchAndSetProducts([bool filterByUser = false]) async {
+    final filterString =
+        filterByUser ? '&orderBy="creatorId"&equalTo="$userId"' : '';
     final url = Uri.parse(
-        'https://flutter-shop-app-df07c-default-rtdb.europe-west1.firebasedatabase.app/products.json?auth=$authToken');
+        'https://flutter-shop-app-df07c-default-rtdb.europe-west1.firebasedatabase.app/products.json?auth=$authToken$filterString');
     try {
       final response = await http.get(url);
       final List<Product> loadedProducts = [];
@@ -33,6 +36,11 @@ class Products with ChangeNotifier {
       if (firebaseData == null) {
         return;
       }
+      final favoriteUrl = Uri.parse(
+          'https://flutter-shop-app-df07c-default-rtdb.europe-west1.firebasedatabase.app/userFavorites/$userId.json?auth=$authToken');
+      final favoriteResponse = await http.get(favoriteUrl);
+      final favoriteData = json.decode(favoriteResponse.body);
+
       firebaseData.forEach((id, data) {
         loadedProducts.add(Product(
           id: id,
@@ -40,7 +48,7 @@ class Products with ChangeNotifier {
           imageUrl: data['imageUrl'],
           price: data['price'],
           title: data['title'],
-          isFavorite: data['isFavorite'],
+          isFavorite: favoriteData == null ? false : favoriteData[id] ?? false,
         ));
       });
       _items = loadedProducts;
@@ -62,7 +70,7 @@ class Products with ChangeNotifier {
           'description': product.description,
           'imageUrl': product.imageUrl,
           'price': product.price,
-          'isFavorite': product.isFavorite,
+          'creatorId': userId,
         }),
       );
       final newProduct = Product(

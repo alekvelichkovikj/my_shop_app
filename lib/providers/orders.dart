@@ -20,10 +20,11 @@ class OrderItem {
 }
 
 class Orders with ChangeNotifier {
+  final String userId;
   final String authToken;
   List<OrderItem> _orders = [];
 
-  Orders(this.authToken, this._orders);
+  Orders(this.authToken, this._orders, this.userId);
 
   List<OrderItem> get orders {
     return [..._orders];
@@ -31,7 +32,7 @@ class Orders with ChangeNotifier {
 
   Future<void> fetchAndSetOrders() async {
     final url = Uri.parse(
-        'https://flutter-shop-app-df07c-default-rtdb.europe-west1.firebasedatabase.app/orders.json?auth=$authToken');
+        'https://flutter-shop-app-df07c-default-rtdb.europe-west1.firebasedatabase.app/orders/$userId.json?auth=$authToken');
     try {
       final response = await http.get(url);
       final List<OrderItem> loadedOrders = [];
@@ -65,7 +66,7 @@ class Orders with ChangeNotifier {
   Future<void> addOrder(List<CartItem> cartProducts, double total) async {
     final timestamp = DateTime.now();
     final url = Uri.parse(
-        'https://flutter-shop-app-df07c-default-rtdb.europe-west1.firebasedatabase.app/orders.json');
+        'https://flutter-shop-app-df07c-default-rtdb.europe-west1.firebasedatabase.app/orders/$userId.json?auth=$authToken');
 
     try {
       final response = await http.post(url,
@@ -98,7 +99,7 @@ class Orders with ChangeNotifier {
 
   Future<void> deleteOrder(String id) async {
     final url = Uri.parse(
-        'https://flutter-shop-app-df07c-default-rtdb.europe-west1.firebasedatabase.app/orders/$id.json?auth=$authToken');
+        'https://flutter-shop-app-df07c-default-rtdb.europe-west1.firebasedatabase.app/orders/$userId/$id.json?auth=$authToken');
     final existingOrderIndex = _orders.indexWhere((prod) => prod.id == id);
     var existingOrder = _orders[existingOrderIndex];
     _orders.removeAt(existingOrderIndex);

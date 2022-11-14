@@ -10,10 +10,9 @@ class UserProductsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final products = Provider.of<Products>(context);
-
     Future<void> _refreshProducts(BuildContext context) async {
-      await Provider.of<Products>(context, listen: false).fetchAndSetProducts();
+      await Provider.of<Products>(context, listen: false)
+          .fetchAndSetProducts(true);
       print('Refresh User Products Screen');
     }
 
@@ -30,26 +29,34 @@ class UserProductsScreen extends StatelessWidget {
         ],
       ),
       drawer: AppDrawer(),
-      body: RefreshIndicator(
-        onRefresh: () => _refreshProducts(context),
-        child: Padding(
-          padding: EdgeInsets.all(10),
-          child: ListView.builder(
-            itemBuilder: ((_, index) => Column(
-                  children: [
-                    UserProductItem(
-                      id: products.items[index].id,
-                      imageUrl: products.items[index].imageUrl,
-                      title: products.items[index].title,
+      body: FutureBuilder(
+        future: _refreshProducts(context),
+        builder: (context, snapshot) => snapshot.connectionState ==
+                ConnectionState.waiting
+            ? Center(child: CircularProgressIndicator())
+            : RefreshIndicator(
+                onRefresh: () => _refreshProducts(context),
+                child: Consumer<Products>(
+                  builder: (context, productsData, _) => Padding(
+                    padding: EdgeInsets.all(10),
+                    child: ListView.builder(
+                      itemBuilder: ((_, index) => Column(
+                            children: [
+                              UserProductItem(
+                                id: productsData.items[index].id,
+                                imageUrl: productsData.items[index].imageUrl,
+                                title: productsData.items[index].title,
+                              ),
+                              Divider(
+                                color: Colors.grey,
+                              ),
+                            ],
+                          )),
+                      itemCount: productsData.items.length,
                     ),
-                    Divider(
-                      color: Colors.grey,
-                    ),
-                  ],
-                )),
-            itemCount: products.items.length,
-          ),
-        ),
+                  ),
+                ),
+              ),
       ),
     );
   }
