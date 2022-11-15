@@ -9,6 +9,7 @@ class AppDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final email = Provider.of<Auth>(context, listen: false).email;
     return Drawer(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -16,7 +17,11 @@ class AppDrawer extends StatelessWidget {
           Column(
             children: [
               AppBar(
-                title: Text('Hello Friend'),
+                title: FittedBox(
+                  child: Text(
+                    'Hello $email',
+                  ),
+                ),
                 automaticallyImplyLeading: false,
               ),
               Divider(),
@@ -54,17 +59,20 @@ class AppDrawer extends StatelessWidget {
               ),
             ],
           ),
-          ListTile(
-            leading: Icon(
-              Icons.exit_to_app,
-              color: Theme.of(context).colorScheme.secondary,
+          Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: ListTile(
+              leading: Icon(
+                Icons.exit_to_app,
+                color: Theme.of(context).colorScheme.secondary,
+              ),
+              title: const Text('Logout'),
+              onTap: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).pushReplacementNamed('/');
+                Provider.of<Auth>(context, listen: false).logout();
+              },
             ),
-            title: const Text('Logout'),
-            onTap: () {
-              Navigator.of(context).pop();
-              Navigator.of(context).pushReplacementNamed('/');
-              Provider.of<Auth>(context, listen: false).logout();
-            },
           ),
         ],
       ),

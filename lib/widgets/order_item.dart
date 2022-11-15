@@ -78,37 +78,43 @@ class _OrderItemState extends State<OrderItem> {
           size: 40,
         ),
       ),
-      child: Card(
-        elevation: 6,
-        margin: EdgeInsets.all(10),
-        child: Column(
-          children: [
-            ListTile(
-              title: Text('€ ${widget.order.amount.toStringAsFixed(2)}'),
-              subtitle: Text(
-                  DateFormat('dd/MM/yyyy hh:mm').format(widget.order.dateTime)),
-              trailing: Container(
-                child: IconButton(
-                  icon: Icon(
-                    _expanded ? Icons.expand_less : Icons.expand_more,
-                    color: Theme.of(context).colorScheme.primary,
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeIn,
+        height: _expanded
+            ? min(widget.order.products.length * 20.0 + 125, 200)
+            : 95,
+        child: Card(
+          elevation: 6,
+          margin: EdgeInsets.all(10),
+          child: Column(
+            children: [
+              ListTile(
+                title: Text('€ ${widget.order.amount.toStringAsFixed(2)}'),
+                subtitle: Text(DateFormat('dd/MM/yyyy hh:mm')
+                    .format(widget.order.dateTime)),
+                trailing: Container(
+                  child: IconButton(
+                    icon: Icon(
+                      _expanded ? Icons.expand_less : Icons.expand_more,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    onPressed: (() {
+                      setState(() {
+                        _expanded = !_expanded;
+                      });
+                    }),
                   ),
-                  onPressed: (() {
-                    setState(() {
-                      _expanded = !_expanded;
-                    });
-                  }),
                 ),
               ),
-            ),
-            if (_expanded)
               SingleChildScrollView(
-                child: Container(
+                child: AnimatedContainer(
+                  duration: Duration(milliseconds: 300),
+                  curve: Curves.easeIn,
+                  height: _expanded
+                      ? min(widget.order.products.length * 20.0 + 30.0, 100)
+                      : 0,
                   padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                  height: min(
-                    (widget.order.products.length * 20.0 + 30.0),
-                    100,
-                  ),
                   child: ListView.builder(
                     itemBuilder: ((context, index) {
                       final product = widget.order.products[index];
@@ -136,7 +142,8 @@ class _OrderItemState extends State<OrderItem> {
                   ),
                 ),
               )
-          ],
+            ],
+          ),
         ),
       ),
     );
